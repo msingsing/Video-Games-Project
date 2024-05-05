@@ -23,6 +23,12 @@ public class EnemyBehavior : MonoBehaviour
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
 
+    // reference to enemy animator controller
+    Animator animator;
+
+    // reference to enemy hit boxes
+    BoxCollider boxCollider;
+
     private void Awake()
     {
         player = GameObject.Find("vBasicController_VBOT_LOD").transform;
@@ -64,7 +70,10 @@ public class EnemyBehavior : MonoBehaviour
 
         if (!alreadyAttacked)
         {
-            // add in some code here for the enemy to do an action
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Zombie Kicking")) {
+                animator.SetTrigger("Attack");
+            }
+            
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -76,11 +85,32 @@ public class EnemyBehavior : MonoBehaviour
         alreadyAttacked = false;
     }
 
+    void EnableAttack()
+    {
+        boxCollider.enabled = true;
+    }
+
+    void DisableAttack()
+    {
+        boxCollider.enabled = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        var player = GameObject.Find("vBasicController_VBOT_LOD").transform;
+
+        if (player != null)
+        {
+            print("HIT!");
+        }
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        animator = GetComponent<Animator>();
+        boxCollider = GetComponentInChildren<BoxCollider>();
     }
 
     // Update is called once per frame
